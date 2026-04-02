@@ -1,0 +1,102 @@
+// Prisma Schema — Finance Backend
+// This file defines our database models, enums, and relationships.
+// Prisma reads this to generate:
+//   1. The Prisma Client (type-safe query builder)
+//   2. SQL migration files
+
+// Generator: tells Prisma to create a JavaScript client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Datasource: SQLite for zero-config local dev
+// To switch to PostgreSQL, just change provider and url
+// NOTE: The connection URL is configured in prisma.config.ts (Prisma 7+)
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── ENUMS ────────────────────────────────────────────
+// Enums enforce that a column can ONLY hold specific values.
+// This is safer than using plain strings — the DB rejects invalid values.
+
+enum Role {
+  VIEWER   // Can only read records
+  ANALYST  // Can read records + view dashboard analytics
+  ADMIN    // Full access: CRUD records, manage users, dashboard
+}
+
+enum UserStatus {
+  ACTIVE   // Can log in and use the system
+  INACTIVE // Locked out — login is rejected
+}
+
+enum RecordType {
+  INCOME   // Money coming in (salary, freelance, etc.)
+  EXPENSE  // Money going out (rent, food, etc.)
+}
+
+// ─── MODELS ───────────────────────────────────────────
+
+model User {
+  // @id     → this is the primary key
+  // @default(uuid()) → auto-generate a UUID when a row is created
+  id           String            @id @default(uuid())
+
+  // @unique → no two users can have the same email
+  email        String            @unique
+
+  name         String
+
+  // Never returned in API responses — only used for bcrypt comparison
+  passwordHash String
+
+  // @default(VIEWER) → new users are Viewers unless specified otherwise
+  role         Role              @default(VIEWER)
+  status       UserStatus        @default(ACTIVE)
+
+  // One-to-many relationship: a User can create many FinancialRecords
+  records      FinancialRecord[]
+
+  // Auto-managed timestamps
+  createdAt    DateTime          @default(now())
+
+  // @updatedAt → Prisma auto-updates this on every .update() call
+  updatedAt    DateTime          @updatedAt
+}
+
+model FinancialRecord {
+  id          String     @id @default(uuid())
+
+  // Transaction amount — always positive (type determines income vs expense)
+  amount      Float
+
+  type        RecordType
+  category    String
+
+  // The date the transaction occurred (not when the record was created)
+  date        DateTime
+
+  // Optional notes about the transaction
+  description String?
+
+  // Foreign key relationship: which user created this record
+  // @relation → tells Prisma how to join these tables
+  createdBy   User       @relation(fields: [createdById], references: [id])
+  createdById String
+
+  // Soft delete: setting this to true "hides" the record without destroying data
+  isDeleted   Boolean    @default(false)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // ─── INDEXES ──────────────────────────────────────
+  // Indexes speed up queries that filter/sort by these columns.
+  // Without indexes, the DB would scan every row (slow on large tables).
+  @@index([type])
+  @@index([category])
+  @@index([date])
+  @@index([createdById])
+  @@index([isDeleted])
+}
