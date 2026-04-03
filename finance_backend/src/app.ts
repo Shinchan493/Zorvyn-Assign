@@ -13,6 +13,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config';
+import { apiLimiter } from './middleware/rateLimiter';
+import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
 
@@ -49,6 +51,10 @@ if (config.isDev) {
 //    Without this, req.body would be undefined
 app.use(express.json({ limit: '10kb' }));
 
+// 5. Rate Limiting: reject too-frequent requests
+//    100 requests per minute per IP for all /api routes
+app.use('/api', apiLimiter);
+
 // ─── ROUTES (will be wired in Step 7) ─────────────────
 
 // Health check endpoint — useful to verify the server is running
@@ -76,5 +82,10 @@ app.use('{*path}', (_req, res) => {
     },
   });
 });
+
+// ─── Global Error Handler ─────────────────────────────
+// MUST be the LAST middleware. Express routes thrown errors and
+// next(error) calls to the first 4-argument middleware it finds.
+app.use(errorHandler);
 
 export default app;
