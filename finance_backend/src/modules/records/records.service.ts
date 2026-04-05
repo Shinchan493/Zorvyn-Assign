@@ -20,12 +20,10 @@
 // - Accidentally deleted records can be recovered (by an Admin via DB)
 // - Regulatory compliance often requires data retention
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../config/prisma';
 import { ApiError } from '../../utils/apiError';
 import { parsePagination, buildMeta } from '../../utils/pagination';
 import type { CreateRecordInput, UpdateRecordInput, ListRecordsQuery } from './records.schema';
-
-const prisma = new PrismaClient();
 
 // ─── Reusable select object ──────────────────────────
 // Defines which FinancialRecord fields to include in API responses.

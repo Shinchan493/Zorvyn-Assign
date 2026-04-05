@@ -19,7 +19,7 @@
 // - Email uniqueness is enforced (catch Prisma unique constraint errors)
 // - Password hash is NEVER returned (excluded via userSelect)
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../config/prisma';
 import { ApiError } from '../../utils/apiError';
 import { parsePagination, buildMeta } from '../../utils/pagination';
 import type {
@@ -28,8 +28,6 @@ import type {
   ChangeRoleInput,
   ChangeStatusInput,
 } from './users.schema';
-
-const prisma = new PrismaClient();
 
 // ─── Reusable select object ──────────────────────────
 // Same pattern as auth.service.ts — explicitly exclude passwordHash.

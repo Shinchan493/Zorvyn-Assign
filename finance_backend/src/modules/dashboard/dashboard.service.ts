@@ -20,10 +20,8 @@
 //
 // ACCESS: ANALYST + ADMIN only (enforced in routes)
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../config/prisma';
 import type { DateRangeQuery, CategoryBreakdownQuery, RecentTransactionsQuery } from './dashboard.schema';
-
-const prisma = new PrismaClient();
 
 // ─── Helper: Build date range WHERE clause ───────────
 // Reused by all dashboard queries to filter by optional date range.

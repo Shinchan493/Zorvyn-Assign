@@ -20,17 +20,12 @@
 // - JWT contains { userId, email, name, role } — enough for auth middleware
 // - We NEVER return passwordHash in any response (excluded via select)
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../config/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { config } from '../../config';
 import { ApiError } from '../../utils/apiError';
 import type { RegisterInput, LoginInput } from './auth.schema';
-
-// ─── Prisma Client Instance ──────────────────────────
-// Single instance shared across the application.
-// Prisma handles connection pooling internally.
-const prisma = new PrismaClient();
 
 // ─── Reusable select object ──────────────────────────
 // Defines which User fields to include in API responses.
