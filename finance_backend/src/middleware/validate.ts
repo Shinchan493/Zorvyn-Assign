@@ -76,7 +76,11 @@ export function validate(schema: ZodSchema) {
     // The actual shape depends on the schema passed to validate().
     const parsed = result.data as Record<string, any>;
     if (parsed.body) req.body = parsed.body;
-    if (parsed.query) req.query = parsed.query;
+    if (parsed.query) {
+      // In Express 5 req.query only has a getter, so we merge properties instead of reassigning
+      Object.keys(req.query).forEach(key => delete req.query[key]);
+      Object.assign(req.query, parsed.query);
+    }
     if (parsed.params) req.params = parsed.params;
 
     next();

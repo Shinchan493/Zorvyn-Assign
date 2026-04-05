@@ -42,6 +42,7 @@ import rateLimit from 'express-rate-limit';
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes in milliseconds
   max: 5,                     // 5 attempts per window
+  skip: () => process.env.NODE_ENV === 'test',
   message: {
     success: false,
     error: {
@@ -68,6 +69,7 @@ export const authLimiter = rateLimit({
 export const apiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000,   // 1 minute in milliseconds
   max: 100,                   // 100 requests per minute
+  skip: () => process.env.NODE_ENV === 'test',
   message: {
     success: false,
     error: {

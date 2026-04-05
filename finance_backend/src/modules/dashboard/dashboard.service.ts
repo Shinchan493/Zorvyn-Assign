@@ -230,7 +230,8 @@ export async function getMonthlyTrends(query: DateRangeQuery) {
 // Default limit: 10, max: 50 (enforced by Zod schema).
 
 export async function getRecentTransactions(query: RecentTransactionsQuery) {
-  const limit = query.limit || 10;
+  // query.limit might still be a string due to express req.query getter behavior
+  const limit = Number(query.limit) || 10;
 
   const records = await prisma.financialRecord.findMany({
     where: { isDeleted: false },
