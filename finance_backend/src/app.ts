@@ -15,6 +15,7 @@ import morgan from 'morgan';
 import { config } from './config';
 import { apiLimiter } from './middleware/rateLimiter';
 import { errorHandler } from './middleware/errorHandler';
+import authRoutes from './modules/auth/auth.routes';
 
 const app = express();
 
@@ -55,7 +56,10 @@ app.use(express.json({ limit: '10kb' }));
 //    100 requests per minute per IP for all /api routes
 app.use('/api', apiLimiter);
 
-// ─── ROUTES (will be wired in Step 7) ─────────────────
+// ─── ROUTES ───────────────────────────────────────────
+
+// Auth routes — register, login, get current user
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint — useful to verify the server is running
 app.get('/api/health', (_req, res) => {
