@@ -17,6 +17,7 @@ import { apiLimiter } from './middleware/rateLimiter';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './modules/auth/auth.routes';
 import usersRoutes from './modules/users/users.routes';
+import recordsRoutes from './modules/records/records.routes';
 
 const app = express();
 
@@ -64,6 +65,9 @@ app.use('/api/auth', authRoutes);
 
 // Users routes — CRUD + role/status management (Admin-only)
 app.use('/api/users', usersRoutes);
+
+// Records routes — financial record CRUD (mixed access: read=all, write=Admin)
+app.use('/api/records', recordsRoutes);
 
 // Health check endpoint — useful to verify the server is running
 app.get('/api/health', (_req, res) => {
