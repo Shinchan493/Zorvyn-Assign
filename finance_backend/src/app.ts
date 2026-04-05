@@ -18,6 +18,7 @@ import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './modules/auth/auth.routes';
 import usersRoutes from './modules/users/users.routes';
 import recordsRoutes from './modules/records/records.routes';
+import dashboardRoutes from './modules/dashboard/dashboard.routes';
 
 const app = express();
 
@@ -68,6 +69,9 @@ app.use('/api/users', usersRoutes);
 
 // Records routes — financial record CRUD (mixed access: read=all, write=Admin)
 app.use('/api/records', recordsRoutes);
+
+// Dashboard routes — analytics and aggregation (Analyst + Admin)
+app.use('/api/dashboard', dashboardRoutes);
 
 // Health check endpoint — useful to verify the server is running
 app.get('/api/health', (_req, res) => {
