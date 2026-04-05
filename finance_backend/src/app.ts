@@ -19,6 +19,8 @@ import authRoutes from './modules/auth/auth.routes';
 import usersRoutes from './modules/users/users.routes';
 import recordsRoutes from './modules/records/records.routes';
 import dashboardRoutes from './modules/dashboard/dashboard.routes';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 
 const app = express();
 
@@ -58,6 +60,20 @@ app.use(express.json({ limit: '10kb' }));
 // 5. Rate Limiting: reject too-frequent requests
 //    100 requests per minute per IP for all /api routes
 app.use('/api', apiLimiter);
+
+// ─── API DOCUMENTATION ───────────────────────────────
+// Swagger UI serves interactive API docs at /api-docs
+// Not rate limited — documentation should always be accessible
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Finance Backend API Docs',
+}));
+
+// JSON spec endpoint — for programmatic access or importing into Postman
+app.get('/api-docs.json', (_req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // ─── ROUTES ───────────────────────────────────────────
 
