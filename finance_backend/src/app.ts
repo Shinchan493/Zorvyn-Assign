@@ -16,6 +16,7 @@ import { config } from './config';
 import { apiLimiter } from './middleware/rateLimiter';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './modules/auth/auth.routes';
+import usersRoutes from './modules/users/users.routes';
 
 const app = express();
 
@@ -60,6 +61,9 @@ app.use('/api', apiLimiter);
 
 // Auth routes — register, login, get current user
 app.use('/api/auth', authRoutes);
+
+// Users routes — CRUD + role/status management (Admin-only)
+app.use('/api/users', usersRoutes);
 
 // Health check endpoint — useful to verify the server is running
 app.get('/api/health', (_req, res) => {
